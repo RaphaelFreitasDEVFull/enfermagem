@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   return (
     <header className="bg-black text-white px-4 py-6 sm:p-10 sm:flex items-center justify-between">
-      <div className="flex items-center border  justify-between">
+      <div className="flex items-center   justify-between">
         <h2 className="text-white font-bold text-lg sm:text-xl">
           ENFERMAGEM <strong className="text-yellow-400">TOOLS</strong>
         </h2>
