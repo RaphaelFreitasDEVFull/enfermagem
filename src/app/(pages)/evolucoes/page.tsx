@@ -20,21 +20,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { leitoText, respText } from "@/app/lib/funcs";
 
 const formSchema = z.object({
   leito: z.string(),
-  respiracao: z.string().optional(),
-  respValue: z.string().optional(),
-  alimentacao: z.string().optional(),
-  acessoVenoso: z.string().optional(),
-  acompanhante: z.string().optional(),
-  pele: z.string().optional(),
-  diurese: z.string().optional(),
-  evacuacao: z.string().optional(),
-  dor: z.string().optional(),
-  alergia: z.string().optional(),
-  diuValue: z.string().optional(),
-  dorValue: z.string().optional(),
+  respiracao: z.string(),
+  respValue: z.string(),
+  alimentacao: z.string(),
+  acessoVenoso: z.string(),
+  acompanhante: z.string(),
+  pele: z.string(),
+  diurese: z.string(),
+  evacuacao: z.string(),
+  dor: z.string(),
+  alergia: z.string(),
+  diuValue: z.string(),
+  dorValue: z.string(),
 });
 
 const Evolucoes = () => {
@@ -58,7 +59,9 @@ const Evolucoes = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const leitoTxt = leitoText(values.leito);
+    const txtResp = respText(values.respiracao, values.respValue);
+    const txtAli = "";
   }
 
   const respWatch = useWatch({ control: form.control, name: "respiracao" });
