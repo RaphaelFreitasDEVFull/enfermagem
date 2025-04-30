@@ -20,7 +20,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { leitoText, respText } from "@/app/lib/funcs";
+import { aliText, diuText, leitoText, respText } from "@/app/lib/funcs";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
+import { ClipboardCopy, X } from "lucide-react";
 
 const formSchema = z.object({
   leito: z.string(),
@@ -41,6 +51,7 @@ const formSchema = z.object({
 const Evolucoes = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange", // importante para validação em tempo real
     defaultValues: {
       leito: "",
       respiracao: "ar ambiente",
@@ -58,18 +69,77 @@ const Evolucoes = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const leitoTxt = leitoText(values.leito);
-    const txtResp = respText(values.respiracao, values.respValue);
-    const txtAli = "";
-  }
+  const [open, setOpen] = useState(false);
+  const [evol, setEvol] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const respWatch = useWatch({ control: form.control, name: "respiracao" });
   const diureseWatch = useWatch({ control: form.control, name: "diurese" });
   const dorWatch = useWatch({ control: form.control, name: "dor" });
 
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const leitoTxt = leitoText(values.leito);
+    const txtResp = respText(values.respiracao, values.respValue);
+    const txtAli = aliText(values.alimentacao);
+    const acessoText = values.acessoVenoso;
+    const acompText =
+      values.acompanhante === "sim"
+        ? "com acompanhante no leito"
+        : "sem acompanhante no leito";
+    const peleText = values.pele;
+    const diureseText = diuText(values.diurese, values.diuValue);
+    const evacText =
+      values.evacuacao === "presente"
+        ? "evacuação presente no período"
+        : "evacuação ausente no presente período";
+    const dorText =
+      values.dor === "presente"
+        ? `com algia em ${values.dorValue}`
+        : "sem queixas e fácies álgicas";
+    const alergText = values.alergia;
+
+    const evolText = `${leitoTxt} ${txtResp}, ${txtAli} ${acessoText}, ${diureseText}, ${evacText}, pele ${peleText.toLowerCase()}, ${dorText}, ${alergText}, ${acompText}`;
+
+    setEvol(evolText);
+    setOpen(true);
+    form.reset();
+  }
+
   return (
     <div className="p-4 sm:p-8 flex flex-col max-w-7xl mx-auto">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="p-4 sm:p-6 rounded-2xl shadow-lg max-w-full sm:max-w-2xl w-full">
+          <DialogHeader className="relative">
+            <DialogTitle className="text-lg sm:text-xl font-bold text-center">
+              Evolução Gerada
+            </DialogTitle>
+            <DialogClose
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 transition"
+            >
+              <X className="w-5 h-5" />
+            </DialogClose>
+          </DialogHeader>
+
+          <DialogDescription className="mt-4 prose prose-sm prose-neutral max-w-none text-justify break-words">
+            {evol}
+          </DialogDescription>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(evol);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition"
+            >
+              <ClipboardCopy className="w-4 h-4" />
+              {copied ? "Copiado!" : "Copiar texto"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <h2 className="text-2xl font-bold">Gerador de Evolução</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-8">
@@ -105,6 +175,8 @@ const Evolucoes = () => {
                           Alimentação VO
                         </SelectItem>
                         <SelectItem value="SNE">Sonda Nasoenteral</SelectItem>
+                        <SelectItem value="gtt">Gastrostomia</SelectItem>
+                        <SelectItem value="jejuno">Jejunostomia</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -260,6 +332,9 @@ const Evolucoes = () => {
                             Sonda Vesical de Demora
                           </SelectItem>
                           <SelectItem value="Uropen">Uropen</SelectItem>
+                          <SelectItem value="Cistostomia">
+                            Cistostomia
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -341,7 +416,7 @@ const Evolucoes = () => {
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Nega alergias ou (Dipirona, Paracetamol)"
+                      placeholder="Nega alergias ou (ex: Dipirona, Paracetamol)"
                     />
                   </FormControl>
                   <FormMessage />
@@ -349,7 +424,9 @@ const Evolucoes = () => {
               )}
             />
           </div>
-          <Button type="submit">Gerar Evolução</Button>
+          <Button type="submit" disabled={!form.formState.isValid}>
+            Gerar Evolução
+          </Button>
         </form>
       </Form>
     </div>
