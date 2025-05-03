@@ -98,7 +98,7 @@ const Evolucoes = () => {
         : "sem queixas e faces álgicas";
     const alergText = values.alergia;
 
-    const evolText = `${leitoTxt} ${txtResp}, ${txtAli} ${acessoText}, ${diureseText}, ${evacText}, pele ${peleText.toLowerCase()}, ${dorText}, ${alergText}, ${acompText}`;
+    const evolText = `${leitoTxt} ${txtResp}, ${txtAli}, ${acessoText}, ${diureseText}, ${evacText}, pele ${peleText.toLowerCase()}, ${dorText}, ${alergText}, ${acompText}`;
 
     setEvol(evolText);
     setOpen(true);
