@@ -95,7 +95,7 @@ const Evolucoes = () => {
     const dorText =
       values.dor === "presente"
         ? `com algia em ${values.dorValue}`
-        : "sem queixas e fácies álgicas";
+        : "sem queixas e faces álgicas";
     const alergText = values.alergia;
 
     const evolText = `${leitoTxt} ${txtResp}, ${txtAli} ${acessoText}, ${diureseText}, ${evacText}, pele ${peleText.toLowerCase()}, ${dorText}, ${alergText}, ${acompText}`;
@@ -334,6 +334,9 @@ const Evolucoes = () => {
                           <SelectItem value="Uropen">Uropen</SelectItem>
                           <SelectItem value="Cistostomia">
                             Cistostomia
+                          </SelectItem>
+                          <SelectItem value="em fralda">
+                            em fralda
                           </SelectItem>
                         </SelectContent>
                       </Select>
