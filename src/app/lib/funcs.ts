@@ -41,6 +41,8 @@ export function diuText(diurese: string, modo: string) {
       return "mantendo cistostomia com débito em bolsa coletora";
     case "Uropen":
       return "mantendo Uropen com débito em frasco coletor";
+    case "em fralda":
+      return "apresenta diurese em fralda"
     default:
       return "diurese presente, modo não especificado";
   }
